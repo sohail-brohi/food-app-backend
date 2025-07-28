@@ -115,8 +115,34 @@ const Login = async (req, res) => {
     });
   }
 };
+const getAllUser = async (req, res) => {
+  try {
+    // Find all users from database
+    const users = await User.find({}).toArray();
 
+    // Remove sensitive information like passwords
+    const sanitizedUsers = users.map((user) => ({
+      userId: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+    }));
+
+    res.status(200).json({
+      msg: "Users retrieved successfully",
+      users: sanitizedUsers,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({
+      msg: "Internal server error",
+      details: error.message,
+    });
+  }
+};
 module.exports = {
   SignUp,
   Login,
+  getAllUser,
 };
